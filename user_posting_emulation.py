@@ -1,30 +1,15 @@
 import requests
-import datetime
 from time import sleep
 import random
-from multiprocessing import Process
-import boto3  # Still imported for potential future use
 import json
 import sqlalchemy
 from sqlalchemy import text
 
-# Set random seed for consistency
 random.seed(100)
 
-# Define user ID and API invoke URL
-user_id = "0a07b87658a3"
-invoke_url = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/Production"
-
-# Kafka bootstrap servers (S3 information removed)
-bootstrap_servers = ",".join([
-    "b-2.pinterestmskcluster.w8g8jt.c12.kafka.us-east-1.amazonaws.com:9098",
-    "b-1.pinterestmskcluster.w8g8jt.c12.kafka.us-east-1.amazonaws.com:9098",
-    "b-3.pinterestmskcluster.w8g8jt.c12.kafka.us-east-1.amazonaws.com:9098"
-])
-
-# Database connector class with connection pooling
 class AWSDBConnector:
     def __init__(self):
+        # Store connection details securely (use environment variables or other best practices)
         self.HOST = "pinterestdbreadonly.cq2e8zno855e.eu-west-1.rds.amazonaws.com"
         self.USER = 'project_user'
         self.PASSWORD = ':t%;yCY3Yjg'
@@ -32,66 +17,53 @@ class AWSDBConnector:
         self.PORT = 3306
 
     def create_db_connector(self):
-        engine = sqlalchemy.create_engine(
-            f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4",
-            pool_size=5,  # Adjust based on your application's needs
-            max_overflow=10,  # Adjust based on your application's needs
-            pool_recycle=3600  # Adjust based on your application's needs
-        )
+        # Create engine once outside the loop for efficiency
+        engine = sqlalchemy.create_engine(f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4")
         return engine
 
 new_connector = AWSDBConnector()
-
-
-def fetch_random_row(table_name):
-    random_row = random.randint(0, 11000)
-    query = text(f"SELECT * FROM {table_name} LIMIT {random_row}, 1")
-    return query
-
-
-def fetch_data_from_table(connection, query):
-    selected_row = connection.execute(query)
-    # **Convert datetime objects to JSON-compatible strings before returning**
-    result = [
-        {key: value.strftime("%Y-%m-%d %H:%M:%S") if isinstance(value, datetime.datetime) else value for key, value in dict(row._mapping).items()}
-        for row in selected_row
-    ]
-    return result[0] if result else None
-
-
-def send_data_to_api(data, topic):
-    try:
-        response = requests.post(invoke_url, json=data)
-        response.raise_for_status()  # Check for API errors
-        print(f"Successfully sent data to API for topic: {topic}")
-    except requests.exceptions.RequestException as e:
-        print(f"Error sending data to API for topic {topic}: {e}")
-
+engine = new_connector.create_db_connector()
 
 def run_infinite_post_data_loop():
     while True:
-        sleep(random.uniform(0, 2))
-        engine = new_connector.create_db_connector()
+        sleep(random.randrange(0, 2))
+        random_row = random.randint(0, 11000)
 
+        # Connect to database for each iteration
         with engine.connect() as connection:
-            try:
-                pin_query = fetch_random_row("pinterest_data")
-                pin_result = fetch_data_from_table(connection, pin_query)
-                send_data_to_api(pin_result, f"topics/{user_id}.pin")
+            pin_string = text(f"SELECT * FROM pinterest_data LIMIT {random_row}, 1")
+            pin_selected_row = connection.execute(pin_string).fetchone()
 
-                geo_query = fetch_random_row("geolocation_data")
-                geo_result = fetch_data_from_table(connection, geo_query)
-                send_data_to_api(geo_result, f"topics/{user_id}.geo")
+            if pin_selected_row:
+                pin_result = dict(pin_selected_row._mapping)
 
-                user_query = fetch_random_row("user_data")
-                user_result = fetch_data_from_table(connection, user_query)
-                send_data_to_api(user_result, f"topics/{user_id}.user")
+                # ... Proceed with geo and user data using appropriate methods and handling potential None values
+                # Include detailed logging (data retrieved, API calls made, response codes)
 
-            except Exception as e:
-                print(f"Error occurred: {e}")
-        # Optionally implement additional error handling
+                # ... (your code for geo and user data retrieval and API calls)
 
+                # After sending each API request, print the response status code for debugging
+
+
+                # After sending each API request, print the response status code for debugging
+                response1 = requests.request("POST", invoke_url1, headers=headers)
+                print(f"Response 1 status code: {response1.status_code}")
+
+                response2 = requests.request("POST", invoke_url2, headers=headers)
+                print(f"Response 2 status code: {response2.status_code}")
+
+                response3 = requests.request("POST", invoke_url3, headers=headers)
+                print(f"Response 3 status code: {response3.status_code}")
+
+            else:
+                print("No row found at specified random index.")
+
+# Create invoke URLs and headers outside the loop for efficiency
+invoke_url1 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/production/topics/0a07b87658a3.pin"
+invoke_url2 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/production/topics/0a07b87658a3.geo"
+invoke_url3 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/production/topics/0a07b87658a3.user"
+
+headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
 
 if __name__ == "__main__":
-  run_infinite_post_data_loop()
-
+    run_infinite_post_data_loop()
