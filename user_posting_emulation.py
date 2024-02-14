@@ -57,7 +57,7 @@ def run_infinite_post_data_loop():
                 user_result = dict(row._mapping)
 
 
-            invoke_url1 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/production/topics/0a07b87658a3.pin"
+            invoke_url1 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/Production/topics/0a07b87658a3.pin"
             payload1 = json.dumps({
     "records": [
         {
@@ -69,7 +69,7 @@ def run_infinite_post_data_loop():
 })
             
 
-            invoke_url2 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/production/topics/0a07b87658a3.geo"
+            invoke_url2 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/Production/topics/0a07b87658a3.geo"
             payload2 = json.dumps({
     "records": [
         {
@@ -79,7 +79,7 @@ def run_infinite_post_data_loop():
 })
             
 
-            invoke_url3 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/production/topics/0a07b87658a3.user"
+            invoke_url3 = "https://01cw9fs2p4.execute-api.us-east-1.amazonaws.com/Production/topics/0a07b87658a3.user"
             payload3 = json.dumps({
     "records": [
         {
