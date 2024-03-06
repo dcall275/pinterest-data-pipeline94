@@ -1,5 +1,5 @@
 
-### **Project Overview: Pinterest Data Pipeline Project**
+## **Project Overview: Pinterest Data Pipeline Project**
 
 This Pinterest Data Pipeline Project applies data pipeline and processing concepts for both batch and streaming data on Pinterest. 
 The primary goal is to establish a consistent and scalable data processing pipeline on Amazon Web Services (AWS), showcasing an end-to-end process for 
@@ -44,9 +44,33 @@ pinterest_data: Information about posts updated to Pinterest.
 geolocation_data: Data about the geolocation of each Pinterest post.
 user_data: Information about users who have uploaded posts. 
 
+**For the streaming tasks, the following data streams are created:**
+
+streaming_df_pin: Streamed information about posts updated to Pinterest.
+streaming_df_geo: Streamed data about the geolocation of each Pinterest post.
+streaming_df_user: Streamed information about users who have uploaded posts.
+
 The second script is user_posting_emulation_streams.py which emulates real time streaming of the Pinterest Data.  
 
-### **Key Components:**
+## **About the Data Pipeline Process used:**
+
+This data pipelining process involves two distinct processes:
+
+## **Batch Data Processing:**
+
+- Extraction of data from Amazon RDS is accomplished through the Kafka REST API, installed on an EC2 Client machine.
+- Extracted data is stored in an Amazon S3 Bucket in JSON format.
+- The S3 Bucket is mounted to Databricks, facilitating data loading into the platform.
+- Data is then stored in dataframes, subsequently undergoing cleaning and analysis processes.
+- To streamline and automate this batch processing, AWS MWAA (Managed Workflows for Apache Airflow) can be employed.
+
+## **Streaming Data Processing:**
+- Data extraction from Amazon RDS is achieved using the REST API.
+- The extracted data is stored in Kinesis streams, organized into shards for efficient processing.
+- Real-time loading of streaming data into Databricks takes place, continuously appending to the existing dataframe.
+- The data undergoes a cleaning process, and delta tables are generated within Databricks for further analysis.
+
+## **Key Components:**
 
 ### **Cloud Services Utilised:**
 - Amazon Web Services (AWS) is utilized, offering various services across global data centers.
