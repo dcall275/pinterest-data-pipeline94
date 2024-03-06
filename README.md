@@ -40,15 +40,16 @@ Pinterest’s experimental processing pipeline.
 
 There are 2 files used to emulate Pinterest's data, the first to run the batch processing emulation and the second to run the stream processing of the Pinterest data.   This project requires a two scripts to be run to emulate the flow of the Pinterest data: user_posting_emulation.py, which contains login credentials for an RDS database. The database holds three tables, resembling data received by the Pinterest API during a user's POST request, including:
 
-pinterest_data: Information about posts updated to Pinterest.
-geolocation_data: Data about the geolocation of each Pinterest post.
-user_data: Information about users who have uploaded posts. 
+
+**Pinterest Data Tables:**
+- pinterest_data: Information about posts updated to Pinterest.
+- geolocation_data: Data about the geolocation of each Pinterest post.
+- user_data: Information about users who have uploaded posts. 
 
 **For the streaming tasks, the following data streams are created:**
-
-streaming_df_pin: Streamed information about posts updated to Pinterest.
-streaming_df_geo: Streamed data about the geolocation of each Pinterest post.
-streaming_df_user: Streamed information about users who have uploaded posts.
+- streaming_df_pin: Streamed information about posts updated to Pinterest.
+- streaming_df_geo: Streamed data about the geolocation of each Pinterest post.
+- streaming_df_user: Streamed information about users who have uploaded posts.
 
 The second script is user_posting_emulation_streams.py which emulates real time streaming of the Pinterest Data.  
 
