@@ -9,8 +9,8 @@ Pinterest’s experimental processing pipeline.
 ### **Key Components:**
 
 ## **Cloud Services Utilised:**
-Amazon Web Services (AWS) is utilized, offering various services across global data centers.
-AWS Services Employed:
+- Amazon Web Services (AWS) is utilized, offering various services across global data centers.
+- AWS Services Employed:
 S3 (Simple Storage Service)
 EC2 (Elastic Compute Cloud)
 MSK (Managed Streaming for Kafka)
